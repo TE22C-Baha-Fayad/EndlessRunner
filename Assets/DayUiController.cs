@@ -6,26 +6,45 @@ public class DayUiController : MonoBehaviour
 {
     // Start is called before the first frame update
     TextMeshProUGUI textMeshProUGUI;
-    [SerializeField][Range(0.1f,1f)] float colorLerpSpeed = 1f;
+    [SerializeField][Range(0.1f, 1f)] float colorLerpSpeed = 1f;
     [SerializeField] Color dayColor;
     [SerializeField] Color nightColor;
+    int daysCounter = 0;
 
     bool isDay = true;
 
     float timer = 0;
+
+    private void OnEnable()
+    {
+        BackgroundImageController.OnDayTimeStateChanged += BackgroundImageController_OnDayTimeStateChanged;
+    }
+    private void OnDisable()
+    {
+        BackgroundImageController.OnDayTimeStateChanged -= BackgroundImageController_OnDayTimeStateChanged;
+    }
     void Start()
     {
         textMeshProUGUI = GetComponent<TextMeshProUGUI>();
-    
     }
 
-    
+    private void BackgroundImageController_OnDayTimeStateChanged(bool isDay)
+    {
+        timer = 0;
+        this.isDay = isDay;
+        if (!isDay)
+            daysCounter++;
+
+        textMeshProUGUI.text = "Day " + daysCounter.ToString();
+    }
+
+
 
     // Update is called once per frame
     void Update()
     {
-        timer += Time.deltaTime *colorLerpSpeed;
-        if(timer > 1)
+        timer += Time.deltaTime * colorLerpSpeed;
+        if (timer > 1)
         {
             timer = 1;
         }
@@ -34,15 +53,6 @@ public class DayUiController : MonoBehaviour
         else if (!isDay)
             textMeshProUGUI.color = Color.Lerp(nightColor, dayColor, timer);
 
-        if (textMeshProUGUI.color == nightColor)
-        {
-            isDay = false;
-            timer = 0;
-        }
-        else if (textMeshProUGUI.color == dayColor)
-        {
-            isDay = true;
-            timer = 0;
-        }
+      
     }
 }

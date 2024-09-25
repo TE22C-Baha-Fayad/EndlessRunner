@@ -13,26 +13,35 @@ public class BackgroundImageController : MonoBehaviour
 
     public delegate void DayTimeState(bool isDay);
     public static event DayTimeState OnDayTimeStateChanged;
-
-    float imageWidth;
+    [SerializeField] Transform dayStartReference;
+    [SerializeField] Transform nightStartReference;
+    bool isDayStartFactor = false;
     void Start()
     {
-        imageWidth = backgroundImages[0].GetComponent<SpriteRenderer>().sprite.bounds.size.x ;
-        print("image width"+imageWidth);
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        print(imageWidth);
-        
-        
-        float image0BackgroundX = backgroundImages[1].transform.position.x - imageWidth/2;
-        print(image0BackgroundX);
-        if (playerTransform.localPosition.x > image0BackgroundX)
-        { 
-            print("Entered Night State");
+
+
+        float positionExtender = 11.5f;
+
+        if (playerTransform.localPosition.x +positionExtender > dayStartReference.position.x && playerTransform.localPosition.x < dayStartReference.position.x + 1f && isDayStartFactor)
+        {
+            //day state entered
+            OnDayTimeStateChanged?.Invoke(false);
+            isDayStartFactor = false;
         }
+        if (playerTransform.localPosition.x+positionExtender > nightStartReference.position.x && playerTransform.position.x < nightStartReference.position.x + 1 && !isDayStartFactor)
+        {
+            //night state entered
+            OnDayTimeStateChanged?.Invoke(true);
+
+            isDayStartFactor =true;
+        }
+
 
 
         if (playerTransform.localPosition.x > backgroundImages[0].transform.position.x + xdifferenceConstant)
