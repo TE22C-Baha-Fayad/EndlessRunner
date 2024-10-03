@@ -9,6 +9,9 @@ public class DayUiController : MonoBehaviour
     [SerializeField][Range(0.1f, 1f)] float colorLerpSpeed = 1f;
     [SerializeField] Color dayColor;
     [SerializeField] Color nightColor;
+
+    public delegate void DayCounterIncreament();
+    public static event DayCounterIncreament OnDayCounterIncrease;
     int daysCounter = 0;
 
     bool isDay = true;
@@ -34,6 +37,7 @@ public class DayUiController : MonoBehaviour
         this.isDay = isDay;
         if (!isDay)
             daysCounter++;
+            OnDayCounterIncrease?.Invoke();
 
         textMeshProUGUI.text = "Day " + daysCounter.ToString();
     }
@@ -53,6 +57,6 @@ public class DayUiController : MonoBehaviour
         else if (!isDay)
             textMeshProUGUI.color = Color.Lerp(nightColor, dayColor, timer);
 
-      
+
     }
 }
