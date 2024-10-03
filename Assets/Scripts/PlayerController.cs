@@ -1,18 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Threading;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 public class PlayerController : MonoBehaviour
 {
-    [Range(0, 100)] private float Health = 100f;
+    public static int Health { get; private set; } = 100;
     [SerializeField] float speed = 1f;
-    [SerializeField] float takeDamageAmmount = 20;
+    [SerializeField] int takeDamageAmmount = 20;
+    [SerializeField] float hitCooldownTime = 1f; 
     [SerializeField] float jumpHeight = 2f;
     [SerializeField] LayerMask targetRayLayers;
     [SerializeField] float collisionDistance = 0.5f;
+
+
+    public delegate void PlayerHit(int ammount);
+    public static event PlayerHit OnPlayerHit;
 
     private bool JumpBtnPressed = false;
     Vector2 Playersize;
@@ -40,6 +46,8 @@ public class PlayerController : MonoBehaviour
     }
 
     // Update is called once per frame
+    bool playerHitFactor = false;
+    float hitCooldownTimer = 0;
     void Update()
     {
        
@@ -50,14 +58,28 @@ public class PlayerController : MonoBehaviour
         }
         bool HitObstacles()
         {
-            RaycastHit2D rayCastHitObstacles = Physics2D.BoxCast(transform.position, Playersize, 0, Vector2.down, collisionDistance, LayerMask.GetMask("Obstacles"));
+            RaycastHit2D rayCastHitObstacles = Physics2D.BoxCast(transform.position, Playersize, 0, Vector2.down, collisionDistance, LayerMask.GetMask("Obstacle"));
             return rayCastHitObstacles.collider != null;
         }
-        if (HitObstacles())
-        {
 
-            rb.velocity = new Vector2(rb.velocity.x+2, 12f);
+        
+        if (HitObstacles() && !playerHitFactor)
+        {
+            playerHitFactor = true;
+            rb.velocity = new Vector2(rb.velocity.x, 5f);
             Health -= takeDamageAmmount;
+            OnPlayerHit?.Invoke(takeDamageAmmount);
+            if(Health <= 0) Destroy(this.gameObject);
+        }
+        
+        if(playerHitFactor)
+        {
+            hitCooldownTimer += Time.deltaTime;
+            if (hitCooldownTimer > hitCooldownTime)
+            {
+                playerHitFactor = false;
+                hitCooldownTimer = 0;
+            }
         }
 
 

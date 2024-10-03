@@ -24,7 +24,7 @@ public class TrapSpawnerManager : MonoBehaviour
     private void DayUiController_OnDayCounterIncrease()
     {
         int randomIndex = Random.Range(0, traps.Length);
-        Vector3 positionNoise = Random.Range(0, 20) * Vector3.right;
+        Vector3 positionNoise = Random.Range(0, 14) * Vector3.right;
         Vector3 newPosition = player.transform.position+Vector3.right * 10 + positionNoise;
         newPosition.y = -2.48f;
         instance = Instantiate(traps[randomIndex],newPosition,Quaternion.identity);
@@ -40,6 +40,8 @@ public class TrapSpawnerManager : MonoBehaviour
         float sinValue1 = 0.5f * Mathf.Sin(2.4f * Time.time+5) + 0.5f;
         float sinValue2 = 0.5f * Mathf.Sin(2.1f * Time.time+15) + 0.5f;
         float sinValue3 = 0.5f * Mathf.Sin(3.2f * Time.time+20) + 0.5f;
+
+        if(spriteRenderer != null)
         spriteRenderer.color = new Color(sinValue1, sinValue2, sinValue3, 1);
         
 
