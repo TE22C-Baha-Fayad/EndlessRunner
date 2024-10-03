@@ -10,16 +10,19 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] int Health = 100;
     public static float speed { get; private set; } = 5f;
+    [SerializeField] int functionalityDelay = 3;
     [SerializeField] int takeDamageAmmount = 20;
-    [SerializeField] float hitCooldownTime = 1f; 
+    [SerializeField] float hitCooldownTime = 1f;
     [SerializeField] float jumpHeight = 2f;
     [SerializeField] LayerMask targetRayLayers;
     [SerializeField] float collisionDistance = 0.5f;
 
 
-    public delegate void PlayerHit(int ammount);
+    public delegate void PlayerHit(int ammountSeconds);
     public static event PlayerHit OnPlayerHit;
 
+    public delegate void FunctionalityDelayReport(int ammountSeconds);
+    public static event FunctionalityDelayReport OnFunctionalityDelayReport;
     private bool JumpBtnPressed = false;
     Vector2 Playersize;
     Rigidbody2D rb;
@@ -41,6 +44,7 @@ public class PlayerController : MonoBehaviour
     }
     void Start()
     {
+        OnFunctionalityDelayReport?.Invoke(functionalityDelay);
         Playersize = GetComponent<SpriteRenderer>().bounds.size;
         rb = GetComponent<Rigidbody2D>();
     }
@@ -48,9 +52,23 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     bool playerHitFactor = false;
     float hitCooldownTimer = 0;
+
+    float startTimer = 0;
+    bool canUpdate = false;
     void Update()
+    {   
+        if (!canUpdate)
+        startTimer += Time.deltaTime;
+
+        if(startTimer > functionalityDelay)
+        canUpdate = true;
+        
+        if(canUpdate)
+        HandleUpdateFunctionality();
+    }
+
+    void HandleUpdateFunctionality()
     {
-       
         bool IsGrounded()
         {
             RaycastHit2D rayCastHitGround = Physics2D.BoxCast(transform.position, Playersize, 0, Vector2.down, collisionDistance, LayerMask.GetMask("Ground"));
@@ -62,17 +80,17 @@ public class PlayerController : MonoBehaviour
             return rayCastHitObstacles.collider != null;
         }
 
-        
+
         if (HitObstacles() && !playerHitFactor)
         {
             playerHitFactor = true;
             rb.velocity = new Vector2(rb.velocity.x, 5f);
             Health -= takeDamageAmmount;
             OnPlayerHit?.Invoke(takeDamageAmmount);
-            if(Health <= 0) Destroy(this.gameObject);
+            if (Health <= 0) Destroy(this.gameObject);
         }
-        
-        if(playerHitFactor)
+
+        if (playerHitFactor)
         {
             hitCooldownTimer += Time.deltaTime;
             if (hitCooldownTimer > hitCooldownTime)
@@ -101,5 +119,6 @@ public class PlayerController : MonoBehaviour
             rb.velocity = new Vector2(0, rb.velocity.y);
         Vector3 cameraPosition = Camera.main.transform.position;
         Camera.main.transform.position = new Vector3(transform.position.x, cameraPosition.y, cameraPosition.z);
+
     }
 }

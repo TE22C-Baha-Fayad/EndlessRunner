@@ -24,10 +24,14 @@ public class TrapSpawnerManager : MonoBehaviour
     private void DayUiController_OnDayCounterIncrease()
     {
         int randomIndex = Random.Range(0, traps.Length);
-        Vector3 positionNoise = Random.Range(0, 14) * Vector3.right;
-        Vector3 newPosition = player.transform.position+Vector3.right * 10 + positionNoise;
-        newPosition.y = -2.48f;
-        instance = Instantiate(traps[randomIndex],newPosition,Quaternion.identity);
+        Vector3 positionNoise = Random.Range(4, 14) * Vector3.right;
+
+        if(player != null)
+        {
+            Vector3 newPosition = player.transform.position + Vector3.right * 10 + positionNoise;
+            newPosition.y = -2.48f;
+            instance = Instantiate(traps[randomIndex], newPosition, Quaternion.identity);
+        }
         int RandomColorIndex = Random.Range(0, 3);
         Color[] colors = new Color[3] {Color.red,Color.white,Color.green};
         spriteRenderer = instance.GetComponent<SpriteRenderer>();
