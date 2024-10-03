@@ -9,41 +9,55 @@ using UnityEngine.Rendering;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] int Health = 100;
-    public static float speed { get; private set; } = 5f;
+    [SerializeField] float speed = 5f;
     [SerializeField] int functionalityDelay = 3;
     [SerializeField] int takeDamageAmmount = 20;
     [SerializeField] float hitCooldownTime = 1f;
     [SerializeField] float jumpHeight = 2f;
     [SerializeField] LayerMask targetRayLayers;
     [SerializeField] float collisionDistance = 0.5f;
-
+    [SerializeField] GameObject endCanvas;
 
     public delegate void PlayerHit(int ammountSeconds);
     public static event PlayerHit OnPlayerHit;
 
     public delegate void FunctionalityDelayReport(int ammountSeconds);
     public static event FunctionalityDelayReport OnFunctionalityDelayReport;
+
+    public delegate void DayCountReport(int count);
+    public static event DayCountReport OnDayCountReport;
+
+    public delegate void SpeedReport(float speed);
+    public static event SpeedReport OnSpeedReport;
+
     private bool JumpBtnPressed = false;
     Vector2 Playersize;
     Rigidbody2D rb;
+    int dayCount = 0;
     // Start is called before the first frame update
     private void OnEnable()
     {
-        DayUiController.OnDayCounterIncrease += DayUiController_OnDayCounterIncrease;
+        DayUiController.OnDayShiftIncrement += DayUiController_OnDayCounterIncrease;
     }
 
     private void OnDisable()
     {
-        DayUiController.OnDayCounterIncrease -= DayUiController_OnDayCounterIncrease;
+        DayUiController.OnDayShiftIncrement -= DayUiController_OnDayCounterIncrease;
     }
 
     private void DayUiController_OnDayCounterIncrease()
     {
+        dayCount++;
         if (speed < 14)
+        {
+
             speed += 0.05f;
+            OnSpeedReport?.Invoke(speed);
+        }
     }
     void Start()
     {
+        
         OnFunctionalityDelayReport?.Invoke(functionalityDelay);
         Playersize = GetComponent<SpriteRenderer>().bounds.size;
         rb = GetComponent<Rigidbody2D>();
@@ -56,15 +70,15 @@ public class PlayerController : MonoBehaviour
     float startTimer = 0;
     bool canUpdate = false;
     void Update()
-    {   
+    {
         if (!canUpdate)
-        startTimer += Time.deltaTime;
+            startTimer += Time.deltaTime;
 
-        if(startTimer > functionalityDelay)
-        canUpdate = true;
-        
-        if(canUpdate)
-        HandleUpdateFunctionality();
+        if (startTimer > functionalityDelay)
+            canUpdate = true;
+
+        if (canUpdate)
+            HandleUpdateFunctionality();
     }
 
     void HandleUpdateFunctionality()
@@ -86,8 +100,15 @@ public class PlayerController : MonoBehaviour
             playerHitFactor = true;
             rb.velocity = new Vector2(rb.velocity.x, 5f);
             Health -= takeDamageAmmount;
+            AudioSource audioSource = GetComponent<AudioSource>();
+            audioSource.PlayOneShot(audioSource.clip);
             OnPlayerHit?.Invoke(takeDamageAmmount);
-            if (Health <= 0) Destroy(this.gameObject);
+            if (Health <= 0)
+            {
+                Destroy(this.gameObject);
+                endCanvas.SetActive(true);
+                OnDayCountReport?.Invoke(dayCount);
+            }
         }
 
         if (playerHitFactor)

@@ -11,12 +11,12 @@ public class TrapSpawnerManager : MonoBehaviour
     //include red, green and yellow traps
     private void OnEnable()
     {
-        DayUiController.OnDayCounterIncrease += DayUiController_OnDayCounterIncrease;
+        DayUiController.OnDayShiftIncrement += DayUiController_OnDayCounterIncrease;
     }
 
     private void OnDisable()
     {
-        DayUiController.OnDayCounterIncrease -= DayUiController_OnDayCounterIncrease;
+        DayUiController.OnDayShiftIncrement -= DayUiController_OnDayCounterIncrease;
     }
     GameObject lastInstance;
     GameObject instance;
@@ -24,7 +24,7 @@ public class TrapSpawnerManager : MonoBehaviour
     private void DayUiController_OnDayCounterIncrease()
     {
         int randomIndex = Random.Range(0, traps.Length);
-        Vector3 positionNoise = Random.Range(4, 14) * Vector3.right;
+        Vector3 positionNoise = Random.Range(4, 12) * Vector3.right;
 
         if(player != null)
         {

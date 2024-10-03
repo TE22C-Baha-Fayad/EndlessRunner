@@ -10,8 +10,8 @@ public class DayUiController : MonoBehaviour
     [SerializeField] Color dayColor;
     [SerializeField] Color nightColor;
 
-    public delegate void DayCounterIncreament();
-    public static event DayCounterIncreament OnDayCounterIncrease;
+    public delegate void DayShiftIncrement();
+    public static event DayShiftIncrement OnDayShiftIncrement;
     int daysCounter = 0;
 
     bool isDay = true;
@@ -37,7 +37,7 @@ public class DayUiController : MonoBehaviour
         this.isDay = isDay;
         if (!isDay)
             daysCounter++;
-            OnDayCounterIncrease?.Invoke();
+            OnDayShiftIncrement?.Invoke();
 
         textMeshProUGUI.text = "Day " + daysCounter.ToString();
     }
