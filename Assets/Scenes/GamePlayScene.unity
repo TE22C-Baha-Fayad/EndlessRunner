@@ -837,7 +837,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
-  takeDamageAmmount: 20
+  takeDamageAmmount: 5
   hitCooldownTime: 1
   jumpHeight: 3
   targetRayLayers:

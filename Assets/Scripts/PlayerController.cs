@@ -8,8 +8,8 @@ using UnityEngine.Rendering;
 
 public class PlayerController : MonoBehaviour
 {
-    public static int Health { get; private set; } = 100;
-    [SerializeField] float speed = 1f;
+    [SerializeField] int Health = 100;
+    public static float speed { get; private set; } = 5f;
     [SerializeField] int takeDamageAmmount = 20;
     [SerializeField] float hitCooldownTime = 1f; 
     [SerializeField] float jumpHeight = 2f;
@@ -58,7 +58,7 @@ public class PlayerController : MonoBehaviour
         }
         bool HitObstacles()
         {
-            RaycastHit2D rayCastHitObstacles = Physics2D.BoxCast(transform.position, Playersize, 0, Vector2.down, collisionDistance, LayerMask.GetMask("Obstacle"));
+            RaycastHit2D rayCastHitObstacles = Physics2D.BoxCast(transform.position, Playersize, 0, Vector2.down, 0.1f, LayerMask.GetMask("Obstacle"));
             return rayCastHitObstacles.collider != null;
         }
 
