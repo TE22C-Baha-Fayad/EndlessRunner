@@ -15,15 +15,25 @@ public class backgroundSoundController : MonoBehaviour
     }
     private void Update()
     {
-        GameObject childObject = transform.GetChild(0).gameObject;
-        if (SettingsManager.music)
+        
+        if(transform.GetChild(0) != null)
         {
-          childObject.SetActive(true);
+            GameObject childObject = transform.GetChild(0).gameObject;
+
+
+            if (SettingsManager.music)
+            {
+                childObject.SetActive(true);
+            }
+            else
+            {
+                childObject.SetActive(false);
+            }
+
         }
-        else
-        {
-            childObject.SetActive(false);
-        }
+
+
+
     }
 
 

@@ -28,18 +28,18 @@ public class BackgroundImageController : MonoBehaviour
 
         float positionExtender = 11.5f;
 
-        if (playerTransform.localPosition.x +positionExtender > dayStartReference.position.x && playerTransform.localPosition.x < dayStartReference.position.x + 1f && isDayStartFactor)
+        if (playerTransform.localPosition.x + positionExtender > dayStartReference.position.x && playerTransform.localPosition.x < dayStartReference.position.x + 1f && isDayStartFactor)
         {
             //day state entered
             OnDayTimeStateChanged?.Invoke(false);
             isDayStartFactor = false;
         }
-        if (playerTransform.localPosition.x+positionExtender > nightStartReference.position.x && playerTransform.position.x < nightStartReference.position.x + 1 && !isDayStartFactor)
+        if (playerTransform.localPosition.x + positionExtender > nightStartReference.position.x && playerTransform.position.x < nightStartReference.position.x + 1 && !isDayStartFactor)
         {
             //night state entered
             OnDayTimeStateChanged?.Invoke(true);
 
-            isDayStartFactor =true;
+            isDayStartFactor = true;
         }
 
 
